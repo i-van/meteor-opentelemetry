@@ -18,7 +18,7 @@ export class DDPSpanExporter implements SpanExporter {
           })
         : 0;
 
-      const req = createExportTraceServiceRequest(spans, true);
+      const req = createExportTraceServiceRequest(spans, { useHex: true });
 
       for (const resSpans of req.resourceSpans ?? []) {
         for (const scopeSpans of resSpans.scopeSpans) {
