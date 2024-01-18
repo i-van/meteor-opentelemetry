@@ -6,9 +6,8 @@ import {
 } from "@opentelemetry/api";
 import { Meteor } from "meteor/meteor";
 
-const tracer = trace.getTracer('async_func');
-
-export async function traceAsyncFunc<T>(spanName: string, func: (span: Span) => Promise<T>) {
+export async function traceAsyncFunc<T>(tracerName: string, spanName: string, func: (span: Span) => Promise<T>) {
+  const tracer = trace.getTracer(tracerName);
   const span = tracer.startSpan(spanName, {
     kind: SpanKind.INTERNAL,
   });
@@ -25,10 +24,10 @@ export async function traceAsyncFunc<T>(spanName: string, func: (span: Span) => 
 
 export function tracedInterval<T>(func: (span: Span) => Promise<T>, delayMs: number) {
   const funcName = func.name || `${func.toString().slice(0, 50)}...` || '(anonymous)';
-  return Meteor.setInterval(() => traceAsyncFunc(funcName, func), delayMs);
+  return Meteor.setInterval(() => traceAsyncFunc('async_func', funcName, func), delayMs);
 }
 
 export function tracedTimeout<T>(func: (span: Span) => Promise<T>, delayMs: number) {
   const funcName = func.name || `${func.toString().slice(0, 50)}...` || '(anonymous)';
-  return Meteor.setTimeout(() => traceAsyncFunc(funcName, func), delayMs);
+  return Meteor.setTimeout(() => traceAsyncFunc('async_func', funcName, func), delayMs);
 }
