@@ -18,15 +18,15 @@ export class DDPSpanExporter implements SpanExporter {
           })
         : 0;
 
-      const req = createExportTraceServiceRequest(spans, { useHex: true });
+      const req = createExportTraceServiceRequest(spans, { useLongBits: false, useHex: true });
 
       for (const resSpans of req.resourceSpans ?? []) {
         for (const scopeSpans of resSpans.scopeSpans) {
           for (const span of scopeSpans.spans ?? []) {
-            span.startTimeUnixNano += (clockOffset * 1_000_000);
-            span.endTimeUnixNano += (clockOffset * 1_000_000);
+            span.startTimeUnixNano = Number(span.startTimeUnixNano) + clockOffset * 1_000_000;
+            span.endTimeUnixNano = Number(span.endTimeUnixNano) + clockOffset * 1_000_000;
             for (const event of span.events ?? []) {
-              event.timeUnixNano += (clockOffset * 1_000_000);
+              event.timeUnixNano = Number(event.timeUnixNano) + clockOffset * 1_000_000;
             }
           }
         }
