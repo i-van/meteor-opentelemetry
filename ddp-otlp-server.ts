@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { check } from "meteor/check";
 
-import { Resource } from '@opentelemetry/resources';
+import { envDetectorSync } from '@opentelemetry/resources';
 import {
   IExportTraceServiceRequest,
   IExportMetricsServiceRequest,
@@ -23,9 +23,9 @@ if (settings.enabled) {
     url: settings.otlpEndpoint ? `${settings.otlpEndpoint}/v1/metrics` : void 0,
   });
 
-  const clientResources = new Resource(settings.clientResourceAttributes ?? {});
-  clientResources.attributes['service.name'] ??= `unknown_service-browser`;
-  const clientAttributeList = Object.entries(clientResources.attributes).map<IKeyValue>(x => ({
+  const clientResource = envDetectorSync.detect();
+  clientResource.attributes['service.name'] = (clientResource.attributes['service.name'] ?? 'unknown-service') + '-browser';
+  const clientAttributeList = Object.entries(clientResource.attributes).map<IKeyValue>(x => ({
     key: x[0],
     value: { stringValue: `${x[1]}` },
   }));

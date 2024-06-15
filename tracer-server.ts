@@ -1,7 +1,7 @@
 import { diag, DiagConsoleLogger, DiagLogLevel, metrics } from "@opentelemetry/api";
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
-import { Resource } from '@opentelemetry/resources';
+import { envDetectorSync } from '@opentelemetry/resources';
 import { BatchSpanProcessor, NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { PeriodicExportingMetricReader, MeterProvider } from '@opentelemetry/sdk-metrics';
 
@@ -17,7 +17,7 @@ import './instrument/webapp'
 import './instrument/mongodb'
 
 if (settings.enabled) {
-  const resource = new Resource(settings.serverResourceAttributes ?? {});
+  const resource = envDetectorSync.detect();
 
   const metricsProvider = new MeterProvider({
     resource,

@@ -35,4 +35,5 @@ if (process.env['DD_VERSION']) {
 
 } else if (process.env['OTEL_EXPORTER_OTLP_ENDPOINT']) {
   settings.enabled ??= true;
+  settings.otlpEndpoint ??= process.env['OTEL_EXPORTER_OTLP_ENDPOINT'];
 }
